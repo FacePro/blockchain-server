@@ -1,0 +1,9 @@
+{
+    "name": "collectTokens",
+    "version": "1.0.0",
+    "main": "index.js",
+    "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.418.0",
+        "web3": "^4.1.2"
+    }
+}
