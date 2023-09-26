@@ -1,1 +1,70 @@
+name: Blockchain server QAT Workflow
 
+on:
+  push:
+    branches:
+      - main
+
+env:
+  ENVIRONMENT: 'qat' # Change this value to 'qat' or 'prod' when needed
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.x'
+          
+      - name: Navigate to Lambda function directory
+        run: cd lambda-functions/collectTokens
+
+      - name: Install dependencies
+        run: yarn install --cwd lambda-functions/collectTokens
+
+      - name: Build collectTokens lambda zip
+        run: |
+            mkdir -p ./terraform/${{ env.ENVIRONMENT }}/collectTokens/lambda-packages
+            pwd
+            ls -la 
+            cd ./lambda-functions/collectTokens
+            zip -r ../../terraform/${{ env.ENVIRONMENT }}/collectTokens/lambda-packages/collectTokens.zip .        
+
+
+      - name: Set up Terraform CLI
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.QAT_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.QAT_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Copy Common Terraform files
+        run: |
+          rsync -r --exclude='terraform.auto.tfvars' --exclude='backend.tf' ./common/ ./${{ env.ENVIRONMENT }}/
+        working-directory: ./terraform
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform/${{ env.ENVIRONMENT }}
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ./terraform/${{ env.ENVIRONMENT }}
+        
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: ./terraform/${{ env.ENVIRONMENT }}
+
+      - name: Terraform Apply
+        run: terraform apply --auto-approve
+        working-directory: ./terraform/${{ env.ENVIRONMENT }}
