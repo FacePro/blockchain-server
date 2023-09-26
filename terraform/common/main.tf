@@ -1,6 +1,3 @@
-terraform {
-  required_version = ">= 1.4"
-}
 
 resource "aws_iam_role" "lambda_role" {
   name = "collectTokens_lambda_role"
