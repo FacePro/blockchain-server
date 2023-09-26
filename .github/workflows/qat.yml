@@ -29,6 +29,12 @@ jobs:
           mkdir -p ../../terraform/${{ env.ENVIRONMENT }}/collectTokens/lambda-packages
           zip -r ../../terraform/${{ env.ENVIRONMENT }}/collectTokens/lambda-packages/collectTokens.zip .
 
+      - name: Upload ZIP as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: collectTokens-lambda-package
+          path: ./terraform/${{ env.ENVIRONMENT }}/collectTokens/lambda-packages/collectTokens.zip
+
       - name: Set up Terraform CLI
         uses: hashicorp/setup-terraform@v1
         with:
