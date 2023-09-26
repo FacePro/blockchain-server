@@ -20,21 +20,14 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '18.x'
-          
-      - name: Navigate to Lambda function directory
-        run: cd lambda-functions/collectTokens
 
-      - name: Install dependencies
-        run: yarn install --cwd lambda-functions/collectTokens
 
-      - name: Build collectTokens lambda zip
+      - name: Install dependencies and build collectTokens lambda zip
         run: |
-            mkdir -p ./terraform/${{ env.ENVIRONMENT }}/collectTokens/lambda-packages
-            pwd
-            ls -la 
-            cd ./lambda-functions/collectTokens
-            zip -r ../../terraform/${{ env.ENVIRONMENT }}/collectTokens/lambda-packages/collectTokens.zip .        
-
+          cd lambda-functions/collectTokens
+          yarn install
+          mkdir -p ../../terraform/${{ env.ENVIRONMENT }}/collectTokens/lambda-packages
+          zip -r ../../terraform/${{ env.ENVIRONMENT }}/collectTokens/lambda-packages/collectTokens.zip .
 
       - name: Set up Terraform CLI
         uses: hashicorp/setup-terraform@v1
