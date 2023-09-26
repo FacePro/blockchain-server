@@ -5,3 +5,9 @@ variable "aws_region" {
 }
 
 
+variable "ENV_EXAMPLE" {
+  description = "ENV_EXAMPLE"
+  default     = "DefaultTest"
+}
+
+

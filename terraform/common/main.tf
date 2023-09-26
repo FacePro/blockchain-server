@@ -24,5 +24,11 @@ resource "aws_lambda_function" "collectTokens" {
   filename      = "collectTokens/lambda-packages/collectTokens.zip"
 
   source_code_hash = filebase64sha256("collectTokens/lambda-packages/collectTokens.zip")
+  environment {
+    variables = {
+      ENV_EXAMPLE = var.ENV_EXAMPLE
+
+    }
+  }
 
 }
